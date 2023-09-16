@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:manhatan_project/presentation/components/common/skeleton_home_page.dart';
 
 import '../../common/color.dart';
 import 'home_page.dart';
@@ -20,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen> {
       () => Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => const HomePage(
+          builder: (context) =>  const HomePage(
           ),
         ),
       ),
