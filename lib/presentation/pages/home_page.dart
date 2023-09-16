@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:manhatan_project/common/app_theme.dart';
 import 'package:manhatan_project/common/color.dart';
+import 'package:manhatan_project/presentation/components/common/app_navbar.dart';
+import 'package:manhatan_project/presentation/pages/varises_page.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+
+import '../components/common/bottom_navbar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -11,61 +15,36 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final int _selectedIndex = 0;
+
+  void _onItemTapped(int index) {
+    if (index == 0) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomePage()),
+      );
+    } else if (index == 1) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const varisesPage()),
+      );
+    } else if (index == 2) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const varisesPage()),
+      );
+    } else if (index == 3) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const varisesPage()),
+      );
+    }
+  }
   final controller = PageController(viewportFraction: 0.8);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        title: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Image.asset(
-                'assets/images/image 1.png',
-                width: 130,
-                height: 130,
-              ),
-              Row(
-                children: [
-                  Container(
-                    width: 60,
-                    height: 35,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Colors.white,
-                      border: Border.all(
-                        color: BaseColors.neutral200,
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Image.asset(
-                          'assets/images/id Indonesia.png',
-                          width: 30, // Lebar gambar Indonesia.
-                          height: 30, // Tinggi gambar Indonesia.
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'ID',
-                          style: AppTheme.appTextTheme.xSmallNoneMedium,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  const Icon(
-                    Icons.info_outline_rounded,
-                    color: Colors.black,
-                    size: 35,
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
+      appBar: const AppNavbar(),
       body: ListView(
         children: [
           Column(
@@ -184,7 +163,6 @@ class _HomePageState extends State<HomePage> {
                       style: AppTheme.appTextTheme.smallNormalReguler,
                     ),
                     const SizedBox(height: 10),
-// Tombol konsultasi sekarang
                     ElevatedButton(
                       onPressed: () {
                         // Tambahkan logika untuk navigasi ke halaman lain di sini
@@ -243,9 +221,7 @@ class _HomePageState extends State<HomePage> {
                           .copyWith(color: BaseColors.neutral950),
                     ),
                     InkWell(
-                      onTap: () {
-                        // Tambahkan logika untuk navigasi ke halaman lain di sini
-                      },
+                      onTap: () {},
                       borderRadius: BorderRadius.circular(20),
                       child: Container(
                         width: 100,
@@ -365,173 +341,11 @@ class _HomePageState extends State<HomePage> {
               )
             ],
           ),
-          Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: BaseColors.neutral100,
-                    border: Border.all(
-                      color: BaseColors.neutral50,
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      Stack(
-                        children: [
-                          Image.asset(
-                            'assets/images/artikel1.png',
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                          ),
-                          Positioned(
-                            bottom: 10,
-                            left: 10,
-                            child: Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: BaseColors.primary500,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                'Saran Dokter',
-                                style: AppTheme.appTextTheme.xSmallNoneReguler!
-                                    .copyWith(color: Colors.white),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 10),
-                        child: Column(
-                          children: [
-                            Text(
-                              'Pentingnya Penanganan dan Pemberian Obat Varises Esofagus yang Tepat',
-                              style: AppTheme.appTextTheme.largeNoneMedium!
-                                  .copyWith(color: BaseColors.neutral950),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            Text(
-                              'Varises esofagus adalah pembengkakan atau pelebaran pembuluh darah pada...',
-                              style: AppTheme.appTextTheme.smallNormalReguler!
-                                  .copyWith(color: BaseColors.neutral600),
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 2,
-                            ),
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.calendar_today_rounded,
-                                  color: BaseColors.neutral600,
-                                  size: 15,
-                                ),
-                                const SizedBox(width: 5),
-                                Text(
-                                  '12 Agustus 2021',
-                                  style: AppTheme.appTextTheme.smallNoneReguler!
-                                      .copyWith(color: BaseColors.neutral500),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              )
-            ],
-          ),
-          Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: BaseColors.neutral100,
-                    border: Border.all(
-                      color: BaseColors.neutral50,
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      Stack(
-                        children: [
-                          Image.asset(
-                            'assets/images/artikel1.png',
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                          ),
-                          Positioned(
-                            bottom: 10,
-                            left: 10,
-                            child: Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: BaseColors.primary500,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                'Saran Dokter',
-                                style: AppTheme.appTextTheme.xSmallNoneReguler!
-                                    .copyWith(color: Colors.white),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 10),
-                        child: Column(
-                          children: [
-                            Text(
-                              'Pentingnya Penanganan dan Pemberian Obat Varises Esofagus yang Tepat',
-                              style: AppTheme.appTextTheme.largeNoneMedium!
-                                  .copyWith(color: BaseColors.neutral950),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            Text(
-                              'Varises esofagus adalah pembengkakan atau pelebaran pembuluh darah pada...',
-                              style: AppTheme.appTextTheme.smallNormalReguler!
-                                  .copyWith(color: BaseColors.neutral600),
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 2,
-                            ),
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.calendar_today_rounded,
-                                  color: BaseColors.neutral600,
-                                  size: 15,
-                                ),
-                                const SizedBox(width: 5),
-                                Text(
-                                  '12 Agustus 2021',
-                                  style: AppTheme.appTextTheme.smallNoneReguler!
-                                      .copyWith(color: BaseColors.neutral500),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              )
-            ],
-          ),
         ],
+      ),
+      bottomNavigationBar: BottomNavBar(
+        selectedIndex: _selectedIndex,
+        onItemTapped: _onItemTapped,
       ),
     );
   }
