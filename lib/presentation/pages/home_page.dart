@@ -3,7 +3,10 @@ import 'package:manhatan_project/common/app_theme.dart';
 import 'package:manhatan_project/common/color.dart';
 import 'package:manhatan_project/presentation/components/common/app_navbar.dart';
 import 'package:manhatan_project/presentation/components/common/skeleton_home_page.dart';
-import 'package:manhatan_project/presentation/pages/varises_page.dart';
+import 'package:manhatan_project/presentation/components/common/success_page.dart';
+import 'package:manhatan_project/presentation/pages/galery_main_page.dart';
+import 'package:manhatan_project/presentation/pages/konsultasi_page.dart';
+import 'package:manhatan_project/presentation/pages/varises_main_page.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../components/common/bottom_navbar.dart';
@@ -27,17 +30,22 @@ class _HomePageState extends State<HomePage> {
     } else if (index == 1) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const varisesPage()),
+        MaterialPageRoute(builder: (context) => const VarisesMainPage()),
       );
     } else if (index == 2) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const varisesPage()),
+        MaterialPageRoute(builder: (context) => const KonsultasiPage()),
       );
     } else if (index == 3) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const varisesPage()),
+        MaterialPageRoute(builder: (context) => const VarisesMainPage()),
+      );
+    } else if (index == 4) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) =>  GaleryMainPage()),
       );
     }
   }
@@ -118,16 +126,35 @@ class _HomePageState extends State<HomePage> {
                                               .copyWith(color: Colors.white),
                                         ),
                                         const SizedBox(height: 10),
-                                        SmoothPageIndicator(
-                                          controller: controller,
-                                          count: 4,
-                                          effect: WormEffect(
-                                            dotHeight: 4,
-                                            dotWidth: 12,
-                                            dotColor: Colors.grey[300]!,
-                                            activeDotColor:
-                                                BaseColors.neutral50,
-                                          ),
+                                        Row(
+                                          children: [
+                                            SmoothPageIndicator(
+                                              controller: controller,
+                                              count: 1,
+                                              effect: WormEffect(
+                                                dotHeight: 10,
+                                                dotWidth:
+                                                    28, // Ukuran tombol pertama
+                                                dotColor: Colors.grey[300]!,
+                                                activeDotColor:
+                                                    BaseColors.neutral50,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 5),
+                                            SmoothPageIndicator(
+                                              controller: controller,
+                                              count:
+                                                  3, // Jumlah tombol bulat selanjutnya
+                                              effect: WormEffect(
+                                                dotHeight: 10,
+                                                dotWidth:
+                                                    10, // Ukuran tombol-tombol selanjutnya
+                                                dotColor: Colors.grey[300]!,
+                                                activeDotColor:
+                                                    BaseColors.neutral50,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
@@ -187,7 +214,12 @@ class _HomePageState extends State<HomePage> {
                           const SizedBox(height: 10),
                           ElevatedButton(
                             onPressed: () {
-                              // Tambahkan logika untuk navigasi ke halaman lain di sini
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const KonsultasiPage()),
+                              );
                             },
                             style: ElevatedButton.styleFrom(
                               shape: RoundedRectangleBorder(
