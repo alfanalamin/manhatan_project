@@ -17,6 +17,7 @@ class _SkeletonHomePageState extends State<SkeletonHomePage> {
         Column(
           children: [
             Padding(
+              // left, top, right, bottom
               padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
               child: Shimmer.fromColors(
                 direction: ShimmerDirection.ltr, // Dari kiri ke kanan
@@ -182,7 +183,7 @@ class _SkeletonHomePageState extends State<SkeletonHomePage> {
         Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
               child: Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
