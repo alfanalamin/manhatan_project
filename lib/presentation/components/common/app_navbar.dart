@@ -31,7 +31,7 @@ class AppNavbar extends StatelessWidget implements PreferredSizeWidget {
                   height: 35,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: Colors.white,
+                    color: Colors.black,
                     border: Border.all(
                       color: BaseColors.neutral200,
                     ),
