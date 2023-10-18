@@ -1,15 +1,20 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:manhatan_project/common/app_theme.dart';
-import 'package:manhatan_project/common/color.dart';
-import 'package:manhatan_project/presentation/components/common/app_navbar.dart';
-import 'package:manhatan_project/presentation/components/common/skeleton_home_page.dart';
-import 'package:manhatan_project/presentation/components/common/success_page.dart';
-import 'package:manhatan_project/presentation/pages/galery_main_page.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
+import 'package:manhatan_project/common/state_enum.dart';
+import 'package:manhatan_project/data/models/home_response.dart';
+import 'package:manhatan_project/presentation/pages/artikel_main_page.dart';
+import 'package:manhatan_project/presentation/pages/detail_artikel_home.dart';
 import 'package:manhatan_project/presentation/pages/konsultasi_page.dart';
-import 'package:manhatan_project/presentation/pages/varises_main_page.dart';
+import 'package:manhatan_project/presentation/providers/home_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-import '../components/common/bottom_navbar.dart';
+import '../../common/app_theme.dart';
+import '../../common/color.dart';
+import '../components/common/app_navbar.dart';
+import '../components/common/skeleton_home_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -19,48 +24,16 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final int _selectedIndex = 0;
-
-  void _onItemTapped(int index) {
-    if (index == 0) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
-      );
-    } else if (index == 1) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const VarisesMainPage()),
-      );
-    } else if (index == 2) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const KonsultasiPage()),
-      );
-    } else if (index == 3) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const VarisesMainPage()),
-      );
-    } else if (index == 4) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) =>  GaleryMainPage()),
-      );
-    }
-  }
-
-  final controller = PageController(viewportFraction: 0.8);
-  bool isLoading = true;
+  final controller = PageController();
 
   @override
   void initState() {
     super.initState();
-    Future.delayed(
-      const Duration(seconds: 2),
-      () => setState(() {
-        isLoading = false;
-      }),
+    Future.microtask(
+      () => Provider.of<HomeProvider>(
+        context,
+        listen: false,
+      ).doGetHome(),
     );
   }
 
@@ -68,256 +41,89 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const AppNavbar(),
-      body: isLoading
-          ? const SkeletonHomePage()
-          : ListView(
-              children: [
-                Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
-                      child: Container(
-                        width: double.infinity,
-                        height: 200,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: BaseColors.info700,
-                          border: Border.all(
-                            color: BaseColors.neutral200,
-                          ),
-                        ),
-                        child: Stack(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 30,
+      body: Consumer<HomeProvider>(
+        builder: (context, provider, child) {
+          if (provider.homeState == RequestState.loading ||
+              provider.homeState == RequestState.empty) {
+            return const SkeletonHomePage();
+          }
+          final sliders = provider.homeResponse?.slider ?? [];
+          final articles = provider.homeResponse?.article ?? [];
+          return ListView(
+            children: [
+              sliders.isEmpty == true
+                  ? const SizedBox()
+                  : Container(
+                      padding: EdgeInsets.only(
+                        left: 16.w,
+                        right: 16.w,
+                        bottom: 16.h,
+                      ),
+                      height: 200.h,
+                      child: PageView(
+                        padEnds: false,
+                        controller: controller,
+                        children: List.generate(
+                          sliders.length,
+                          (index) {
+                            return Container(
+                              height: 200.h,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12.r),
                               ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Image.asset(
-                                          'assets/images/image 3.png',
-                                          width: 120,
-                                          height: 30,
-                                          fit: BoxFit.cover,
-                                        ),
-                                        const SizedBox(height: 10),
-                                        const Text(
-                                          'Seminar Varises Indonesia',
-                                          maxLines: 2,
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w500,
-                                            fontFamily: 'inter',
-                                          ),
-                                        ),
-                                        const SizedBox(height: 10),
-                                        Text(
-                                          'dr. Niko Azhari Hidayat, Sp.BTKV(K)',
-                                          style: AppTheme
-                                              .appTextTheme.tinyNoneMedium!
-                                              .copyWith(color: Colors.white),
-                                        ),
-                                        const SizedBox(height: 10),
-                                        Row(
-                                          children: [
-                                            SmoothPageIndicator(
-                                              controller: controller,
-                                              count: 1,
-                                              effect: WormEffect(
-                                                dotHeight: 10,
-                                                dotWidth:
-                                                    28, // Ukuran tombol pertama
-                                                dotColor: Colors.grey[300]!,
-                                                activeDotColor:
-                                                    BaseColors.neutral50,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 5),
-                                            SmoothPageIndicator(
-                                              controller: controller,
-                                              count:
-                                                  3, // Jumlah tombol bulat selanjutnya
-                                              effect: WormEffect(
-                                                dotHeight: 10,
-                                                dotWidth:
-                                                    10, // Ukuran tombol-tombol selanjutnya
-                                                dotColor: Colors.grey[300]!,
-                                                activeDotColor:
-                                                    BaseColors.neutral50,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(12.r),
+                                child: CachedNetworkImage(
+                                  height: 200.h,
+                                  fit: BoxFit.cover,
+                                  imageUrl: sliders[index].imagedir ?? '',
+                                  placeholder: (context, url) => Container(
+                                    height: 200.h,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(
+                                        12.r,
+                                      ),
+                                      color: BaseColors.neutral100,
                                     ),
                                   ),
-                                  Align(
-                                    alignment:
-                                        AlignmentDirectional.bottomCenter,
-                                    child: Image.asset(
-                                      'assets/images/image 2.png',
-                                      width: 130,
-                                      height: 180,
-                                      fit: BoxFit.cover,
+                                  errorWidget: (context, url, error) =>
+                                      Container(
+                                    height: 200.h,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(
+                                        12.r,
+                                      ),
+                                      color: BaseColors.neutral100,
                                     ),
-                                  )
-                                ],
+                                  ),
+                                ),
                               ),
-                            ),
-                          ],
+                            );
+                          },
                         ),
                       ),
                     ),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
-                  child: Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: BaseColors.neutral100,
-                      border: Border.all(
-                        color: BaseColors.neutral200,
+              sliders.isEmpty == true
+                  ? const SizedBox()
+                  : Padding(
+                      padding: EdgeInsets.only(
+                        left: 16.w,
+                        bottom: 20.h,
+                      ),
+                      child: SmoothPageIndicator(
+                        controller: controller,
+                        count: sliders.length,
+                        effect: ExpandingDotsEffect(
+                          dotHeight: 12.h,
+                          dotWidth: 12.h, // Ukuran tombol pertama
+                          dotColor: BaseColors.primary300,
+                          activeDotColor: BaseColors.primary500,
+                        ),
                       ),
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 20,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Image.asset(
-                            'assets/images/Frame 6.png',
-                            width: 300,
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            'Konsultasi Yuk!',
-                            style: AppTheme.appTextTheme.largeNoneMedium,
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            'Jika anda punya keluhan dengan kulit anda, jangan ragu untuk konsultasi dengan kami.',
-                            style: AppTheme.appTextTheme.smallNormalReguler,
-                          ),
-                          const SizedBox(height: 10),
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const KonsultasiPage()),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              backgroundColor: const Color(0xFFEC53B8),
-                              padding: const EdgeInsets.all(
-                                  0), // Sesuaikan padding sesuai kebutuhan
-                              elevation:
-                                  2, // Sesuaikan tinggi elevasi sesuai kebutuhan
-                            ),
-                            child: Ink(
-                              width: double.infinity,
-                              height: 50,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Center(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      'Konsultasi Sekarang',
-                                      style: AppTheme
-                                          .appTextTheme.smallNoneMedium!
-                                          .copyWith(color: Colors.white),
-                                    ),
-                                    const SizedBox(width: 10),
-                                    const Icon(
-                                      Icons.arrow_forward_rounded,
-                                      color: Colors.white,
-                                      size: 20,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Artikel Terbaru',
-                            style: AppTheme.appTextTheme.largeNoneMedium!
-                                .copyWith(color: BaseColors.neutral950),
-                          ),
-                          InkWell(
-                            onTap: () {},
-                            borderRadius: BorderRadius.circular(20),
-                            child: Container(
-                              width: 100,
-                              height: 30,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: BaseColors.neutral50,
-                                border: Border.all(
-                                  color: BaseColors.primary200,
-                                ),
-                              ),
-                              child: Center(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      'Lihat Semua',
-                                      style: AppTheme
-                                          .appTextTheme.tinyTightMedium!
-                                          .copyWith(
-                                              color: BaseColors.primary500),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Icon(
-                                      Icons.arrow_forward_rounded,
-                                      color: BaseColors.primary500,
-                                      size: 10,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-                Column(
-                  children: [
-                    Padding(
+              articles.isEmpty == true
+                  ? const SizedBox()
+                  : Padding(
                       padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
                       child: Container(
                         width: double.infinity,
@@ -325,89 +131,279 @@ class _HomePageState extends State<HomePage> {
                           borderRadius: BorderRadius.circular(20),
                           color: BaseColors.neutral100,
                           border: Border.all(
-                            color: BaseColors.neutral50,
+                            color: BaseColors.neutral200,
                           ),
                         ),
-                        child: Column(
-                          children: [
-                            Stack(
-                              children: [
-                                Image.asset(
-                                  'assets/images/artikel1.png',
-                                  width: double.infinity,
-                                  fit: BoxFit.cover,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 20,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Image.asset(
+                                'assets/images/Frame 6.png',
+                                width: 300,
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                'Konsultasi Yuk!',
+                                style: AppTheme.appTextTheme.largeNoneMedium
+                                    ?.copyWith(
+                                  height: 0,
+                                  color: BaseColors.neutral950,
                                 ),
-                                Positioned(
-                                  bottom: 10,
-                                  left: 10,
-                                  child: Container(
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: BaseColors.primary500,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Text(
-                                      'Saran Dokter',
-                                      style: AppTheme
-                                          .appTextTheme.xSmallNoneReguler!
-                                          .copyWith(color: Colors.white),
-                                    ),
-                                  ),
+                              ),
+                              Text(
+                                'Jika anda punya keluhan dengan kulit anda, jangan ragu untuk konsultasi dengan kami.',
+                                style: AppTheme.appTextTheme.smallNormalReguler
+                                    ?.copyWith(
+                                  height: 1.5,
+                                  color: BaseColors.neutral600,
                                 ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 10),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    'Pentingnya Penanganan dan Pemberian Obat Varises Esofagus yang Tepat',
-                                    style: AppTheme
-                                        .appTextTheme.largeNoneMedium!
-                                        .copyWith(color: BaseColors.neutral950),
-                                    overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 10),
+                              InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const KonsultasiPage(),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: 14.h,
                                   ),
-                                  Text(
-                                    'Varises esofagus adalah pembengkakan atau pelebaran pembuluh darah pada...',
-                                    style: AppTheme
-                                        .appTextTheme.smallNormalReguler!
-                                        .copyWith(color: BaseColors.neutral600),
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 2,
+                                  decoration: BoxDecoration(
+                                    color: HexColor.fromHex(
+                                      '#EC53B8',
+                                    ),
+                                    borderRadius: BorderRadius.circular(1000.r),
                                   ),
-                                  Row(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Icon(
-                                        Icons.calendar_today_rounded,
-                                        color: BaseColors.neutral600,
-                                        size: 15,
-                                      ),
-                                      const SizedBox(width: 5),
                                       Text(
-                                        '12 Agustus 2021',
+                                        'Konsultasi Sekarang',
                                         style: AppTheme
-                                            .appTextTheme.smallNoneReguler!
-                                            .copyWith(
-                                                color: BaseColors.neutral500),
+                                            .appTextTheme.smallTightMedium
+                                            ?.copyWith(
+                                          color: Colors.white,
+                                          height: 0,
+                                        ),
+                                      ),
+                                      SizedBox(width: 10.w),
+                                      Icon(
+                                        Icons.arrow_forward_rounded,
+                                        color: Colors.white,
+                                        size: 20.w,
                                       ),
                                     ],
                                   ),
-                                ],
+                                ),
                               ),
-                            )
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    )
+                    ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Artikel Terbaru',
+                      style: AppTheme.appTextTheme.largeNoneMedium!
+                          .copyWith(color: BaseColors.neutral950),
+                    ),
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ArtikelMainPage(),
+                          ),
+                        );
+                      },
+                      borderRadius: BorderRadius.circular(20),
+                      child: Container(
+                        width: 100,
+                        height: 30,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: BaseColors.neutral50,
+                          border: Border.all(
+                            color: BaseColors.primary200,
+                          ),
+                        ),
+                        child: Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Lihat Semua',
+                                style: AppTheme.appTextTheme.tinyTightMedium!
+                                    .copyWith(color: BaseColors.primary500),
+                              ),
+                              const SizedBox(width: 8),
+                              Icon(
+                                Icons.arrow_forward_rounded,
+                                color: BaseColors.primary500,
+                                size: 10,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
+              ),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [for (Article item in articles) _article(item)],
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _article(Article article) {
+    final tags = article.tags ?? [];
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: BaseColors.neutral100,
+          border: Border.all(
+            color: BaseColors.neutral50,
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(14.r),
+                    topRight: Radius.circular(14.r),
+                  ),
+                  child: CachedNetworkImage(
+                    width: double.infinity,
+                    height: 200.h,
+                    fit: BoxFit.cover,
+                    imageUrl: article.imagedir ?? '',
+                    placeholder: (context, url) => Container(
+                      height: 200.h,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(
+                          12.r,
+                        ),
+                        color: BaseColors.neutral100,
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => Container(
+                      height: 200.h,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(14.r),
+                          topRight: Radius.circular(14.r),
+                        ),
+                        color: BaseColors.neutral100,
+                      ),
+                    ),
+                  ),
+                ),
+                tags.isEmpty
+                    ? const SizedBox()
+                    : Positioned(
+                        bottom: 10,
+                        left: 10,
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: BaseColors.primary500,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            tags[0].tag?.name ?? '',
+                            style: AppTheme.appTextTheme.xSmallNoneReguler!
+                                .copyWith(color: Colors.white),
+                          ),
+                        ),
+                      ),
               ],
             ),
-      bottomNavigationBar: BottomNavBar(
-        selectedIndex: _selectedIndex,
-        onItemTapped: _onItemTapped,
+            const SizedBox(height: 10),
+            InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DetailArtikelMain(
+                      article: article,
+                    ),
+                  ),
+                );
+              },
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      article.name ?? '',
+                      style: AppTheme.appTextTheme.largeNoneMedium!
+                          .copyWith(color: BaseColors.neutral950),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(
+                      height: 4.h,
+                    ),
+                    Text(
+                      Bidi.stripHtmlIfNeeded(article.description ?? '').trim(),
+                      style: AppTheme.appTextTheme.smallNormalReguler!
+                          .copyWith(color: BaseColors.neutral600, height: 1.5),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                    ),
+                    SizedBox(
+                      height: 12.h,
+                    ),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.calendar_today_rounded,
+                          color: BaseColors.neutral600,
+                          size: 15,
+                        ),
+                        const SizedBox(width: 5),
+                        Text(
+                          DateFormat('dd MMMM yyyy HH:mm').format(
+                              DateFormat('yyyy-MM-dd HH:mm:ss')
+                                  .parse(article.createdAt ?? '')),
+                          style: AppTheme.appTextTheme.smallNoneReguler!
+                              .copyWith(color: BaseColors.neutral500),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
