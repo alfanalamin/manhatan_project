@@ -1,10 +1,14 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:manhatan_project/common/color.dart';
-
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
+import 'package:manhatan_project/data/models/varises_response.dart';
 import '../../common/app_theme.dart';
+import '../../common/color.dart';
 
 class DetailMainVarises extends StatefulWidget {
-  const DetailMainVarises({Key? key}) : super(key: key);
+  final Varises varises;
+  const DetailMainVarises({Key? key, required this.varises}) : super(key: key);
 
   @override
   _DetailMainVarisesState createState() => _DetailMainVarisesState();
@@ -15,6 +19,9 @@ class _DetailMainVarisesState extends State<DetailMainVarises> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.white,
+        elevation: 0,
         title: Row(
           children: [
             IconButton(
@@ -25,16 +32,6 @@ class _DetailMainVarisesState extends State<DetailMainVarises> {
                   Icons.arrow_back_ios,
                   color: Colors.black,
                 )),
-            // GestureDetector(
-            //   onTap: () {
-            //     Navigator.pop(context);
-            //   },
-            //   child: Image.asset(
-            //     'assets/images/back.png',
-            //     width: 30,
-            //     height: 30,
-            //   ),
-            // ),
             Text(
               'Tanda dan Gejala Varises',
               style: AppTheme.appTextTheme.regulerNoneMedium!
@@ -45,8 +42,13 @@ class _DetailMainVarisesState extends State<DetailMainVarises> {
       ),
       body: ListView(
         children: [
-          Image.asset(
-            'assets/images/detail 1.png',
+          Column(
+            children: [
+              CachedNetworkImage(
+                imageUrl: widget.varises.imagedir ?? '',
+                fit: BoxFit.cover,
+              ),
+            ],
           ),
           const SizedBox(height: 10),
           Padding(
@@ -62,7 +64,7 @@ class _DetailMainVarisesState extends State<DetailMainVarises> {
                     ),
                     const SizedBox(width: 5),
                     Text(
-                      '12 Agustus 2021',
+                      widget.varises.tgl ?? '',
                       style: AppTheme.appTextTheme.smallNoneReguler!
                           .copyWith(color: BaseColors.neutral500),
                     ),
@@ -77,14 +79,23 @@ class _DetailMainVarisesState extends State<DetailMainVarises> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Tanda dan Gejala Varises',
+                  widget.varises.name ?? '',
                   style: AppTheme.appTextTheme.largeNoneMedium!
                       .copyWith(color: BaseColors.neutral950),
                   maxLines: 2,
                 ),
                 const SizedBox(height: 10),
-                const Text(
-                  'Secara klinis, gejala varises dibagi ke dalam beberapa stadium klinis :',
+                Text(
+                  widget.varises.nameEn ?? '',
+                ),
+                Text(
+                  Bidi.stripHtmlIfNeeded(widget.varises.description ?? '')
+                      .trim(),
+                  style: AppTheme.appTextTheme.xSmallNoneMedium?.copyWith(
+                    color: BaseColors.neutral600,
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
               ],
             ),
@@ -94,33 +105,16 @@ class _DetailMainVarisesState extends State<DetailMainVarises> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'STADIUM I',
-                  style: AppTheme.appTextTheme.largeNoneMedium!
-                      .copyWith(color: BaseColors.neutral950),
-                  maxLines: 2,
-                ),
                 const SizedBox(height: 10),
-                const Text(
-                  'Pada stadium ini aliran darah vena yang terhambat mencoba mencari “jalan lain” untuk mencapai bagian atas tubuh ke jantung melalui vena-vena penghubung vena luar/bawah kulit (superficial) dengan vena dalam (profunda). Hal ini mengakibatkan sensasi rasa pegal, nyeri, linu, cepat lelah, ”kemeng” atau kebas pada kaki, hingga kaki tampak bengkak setelah melakukan pekerjaan yang melibatkan tungkai dalam waktu lama (cth. Berjalan lama, berdiri lama).',
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
                 Text(
-                  'STADIUM I',
-                  style: AppTheme.appTextTheme.largeNoneMedium!
-                      .copyWith(color: BaseColors.neutral950),
-                  maxLines: 2,
-                ),
-                const SizedBox(height: 10),
-                const Text(
-                  'Pada stadium ini aliran darah vena yang terhambat mencoba mencari “jalan lain” untuk mencapai bagian atas tubuh ke jantung melalui vena-vena penghubung vena luar/bawah kulit (superficial) dengan vena dalam (profunda). Hal ini mengakibatkan sensasi rasa pegal, nyeri, linu, cepat lelah, ”kemeng” atau kebas pada kaki, hingga kaki tampak bengkak setelah melakukan pekerjaan yang melibatkan tungkai dalam waktu lama (cth. Berjalan lama, berdiri lama).',
+                  Bidi.stripHtmlIfNeeded(widget.varises.description ?? '')
+                      .trim(),
+                  style: AppTheme.appTextTheme.xSmallNoneMedium?.copyWith(
+                    color: BaseColors.neutral600,
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  textAlign: TextAlign.justify,
                 ),
               ],
             ),
