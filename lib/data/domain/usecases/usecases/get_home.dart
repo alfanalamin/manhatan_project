@@ -7,7 +7,6 @@ class GetHome {
   final HomeRepository repository;
 
   GetHome(this.repository);
-
   Future<Either<Failure, HomeResponse>> execute({
     String? page,
   }) async {
