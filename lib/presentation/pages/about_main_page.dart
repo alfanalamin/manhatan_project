@@ -1,10 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:manhatan_project/common/color.dart';
+import 'package:manhatan_project/common/state_enum.dart';
+import 'package:manhatan_project/presentation/providers/about_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:varises/common/color.dart';
-import 'package:varises/common/state_enum.dart';
-import 'package:varises/presentation/providers/about_provider.dart';
 
 class AboutMainPage extends StatefulWidget {
   const AboutMainPage({Key? key}) : super(key: key);
